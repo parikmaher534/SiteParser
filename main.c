@@ -13,23 +13,33 @@
 char *site;
 
 /* Define functions */
+void getSite(char *URL);
 void getSource(char* address, char *filename);
 void parseDocument(xmlNode *node);
 void getImage(xmlChar *src);
 
 
 int main(int argc, char *argv[]) {
-    site = argv[1];
+   
+    /* First argument must be the site URL */
+    if( argv[1] ) {
+        site = argv[1];
+        getSite(site);
+    } else {
+        printf("\nPlease set site URL.\n");
+    }
 
-    getSource(site, "index.html");
+    return 0;
+}
+
+void getSite(char *url) {
+    getSource(url, "index.html");
 
     xmlDoc *doc = htmlReadFile("index.html", "UTF-8", 0);
     xmlNode *node = xmlDocGetRootElement(doc);
     xmlNode *element = xmlFirstElementChild(node);
 
     parseDocument(element);
-    
-    return 0;
 }
 
 void parseDocument(xmlNode *node) {
@@ -37,18 +47,18 @@ void parseDocument(xmlNode *node) {
     xmlChar src[] = "src";
 
     if( strncmp((const char*)node->name, img, 2) == 0 ) {
-        getImage(xmlGetProp(node, src));
+         getImage(xmlGetProp(node, src));
     }
     
     while(node->next) {
+        if( node->children ) {
+            parseDocument(node->children);
+        }
+
         node = node->next;
      
         if( strncmp((const char*)node->name, img, 2) == 0 ) {
             getImage(xmlGetProp(node, src));
-        }
-
-        if( node->children ) {
-            parseDocument(node->children);
         }
     }
 }
@@ -56,14 +66,20 @@ void parseDocument(xmlNode *node) {
 
 void getImage(xmlChar *_src) {
     char *src = (char *)_src;
+    char *isHttp = strstr(src, "http://");
+    char *isHttps = strstr(src, "https://");
     int imageSourceLn = strlen(site) + strlen("/") + strlen(src);
     char path[imageSourceLn];
     path[0] = 0;
 
-    strcat(path, site);
-    strcat(path, "/");
-    strcat(path, src);
-    puts(path);
+    /* If image from another domain or has a absolute path */
+    if( isHttp != NULL || isHttps != NULL ) {
+        strcat(path, src);
+    } else {
+        strcat(path, site);
+        strcat(path, "/");
+        strcat(path, src);
+    }
 
     /* Get image name from src */
     char *srcToc;
@@ -81,25 +97,23 @@ void getImage(xmlChar *_src) {
 
 void getSource(char* address, char *filename) {
     FILE *pipe;
-
-    char commandName[] = "curl -o ";
+    char commandName[] = "curl -s -o ";
     int commandLn =  strlen(commandName) + strlen(filename) + strlen(address) + 1;
     char command[commandLn];
     command[0] = 0;
 
-    printf("\nDownload ---> %s\n\n", address);
-    
     strcat(command, commandName);
     strcat(command, filename);
     strcat(command, " ");
     strcat(command, address);
-    puts(command);  
  
     if( !(pipe = popen(command, "r")) ) {
         exit(1);
     } 
 
     pclose(pipe);
+    
+    printf("\nDownload: %s\n\n", address);
 }
 
 
