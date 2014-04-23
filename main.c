@@ -13,6 +13,7 @@
 char *site;
 
 /* Define functions */
+void parseError(void *ctx);
 void getSite(char *URL);
 void getSource(char* address, char *filename);
 void parseDocument(xmlNode *node);
@@ -20,7 +21,11 @@ void getImage(xmlChar *src);
 
 
 int main(int argc, char *argv[]) {
-   
+
+    //Redefine parse error handler
+    //libxml can't parse HTML5 and we emitt error to error.log 
+    xmlSetGenericErrorFunc(NULL, (void *)parseError);
+  
     /* First argument must be the site URL */
     if( argv[1] ) {
         site = argv[1];
@@ -116,7 +121,5 @@ void getSource(char* address, char *filename) {
     printf("\nDownload: %s\n\n", address);
 }
 
-
-
-
-
+//TODO: write to error log
+void parseError(void *ctx) { };
