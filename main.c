@@ -1,35 +1,16 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-#include <libxml/parser.h>
-#include <libxml/tree.h>
-#include <libxml/HTMLparser.h>
-#include <libxml/HTMLtree.h>
-
-
-
-/* Global varibles */
-char *site;
-
-/* Define functions */
-void parseError(void *ctx);
-void getSite(char *URL);
-void getSource(char* address, char *filename);
-void parseDocument(xmlNode *node);
-void getImage(xmlChar *src);
+#include "main.h"
+#include "src/helpers.c"
 
 
 int main(int argc, char *argv[]) {
 
     //Redefine parse error handler
-    //libxml can't parse HTML5 and we emitt error to error.log 
     xmlSetGenericErrorFunc(NULL, (void *)parseError);
-  
+
     /* First argument must be the site URL */
     if( argv[1] ) {
         site = argv[1];
-        getSite(site);
+        getSite();
     } else {
         printf("\nPlease set site URL.\n");
     }
@@ -37,10 +18,18 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 
-void getSite(char *url) {
-    getSource(url, "index.html");
+void getSite() {
+    dirName = createSiteDirectories(dirName);
 
-    xmlDoc *doc = htmlReadFile("index.html", "UTF-8", 0);
+    const char *index = "/index.html";
+    char pathToHTML[strlen(dirName) + strlen(index)];
+    pathToHTML[0] = 0;
+    strcat(pathToHTML, dirName);
+    strcat(pathToHTML, index);
+
+    getSource(site, pathToHTML);
+
+    xmlDoc *doc = htmlReadFile(pathToHTML, "UTF-8", 0);
     xmlNode *node = xmlDocGetRootElement(doc);
     xmlNode *element = xmlFirstElementChild(node);
 
@@ -71,14 +60,12 @@ void parseDocument(xmlNode *node) {
 
 void getImage(xmlChar *_src) {
     char *src = (char *)_src;
-    char *isHttp = strstr(src, "http://");
-    char *isHttps = strstr(src, "https://");
     int imageSourceLn = strlen(site) + strlen("/") + strlen(src);
     char path[imageSourceLn];
     path[0] = 0;
 
     /* If image from another domain or has a absolute path */
-    if( isHttp != NULL || isHttps != NULL ) {
+    if( hasProtocol(src) ) {
         strcat(path, src);
     } else {
         strcat(path, site);
@@ -96,7 +83,13 @@ void getImage(xmlChar *_src) {
         srcToc = strtok(NULL, "/");
     }
 
-    getSource(path, imageName);
+    /* Get image path */
+    char imgPath[strlen(dirName) + strlen(imageName) + 1];
+    strcat(imgPath, dirName);
+    strcat(imgPath, "/");
+    strcat(imgPath, imageName);
+    
+    getSource(path, imgPath);
 }
 
 
@@ -120,6 +113,19 @@ void getSource(char* address, char *filename) {
     
     printf("\nDownload: %s\n\n", address);
 }
+
+char *createSiteDirectories(char *result) {
+    char *url = malloc(strlen(site));
+    strcpy(url, site);
+
+    result = strtok(url, "://");
+    result = strtok(NULL, "://");
+
+    mkdir(result, 0000755);
+
+    return result;    
+}
+
 
 //TODO: write to error log
 void parseError(void *ctx) { };
