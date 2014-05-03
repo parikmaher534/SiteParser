@@ -121,19 +121,19 @@ struct siteDir *createSiteDirectories(void) {
     char *url = malloc(strlen(site));
     strcpy(url, site);
 
-    char *result = strtok(url, "://");
-    result = strtok(NULL, "://");
-    mkdir(result, 0000755);
+    char *dirName = strtok(url, "://");
+    dirName = strtok(NULL, "://");
+    mkdir(dirName, 0000755);
 
     char *imgDirName = "/images";
-    char *imgDir = (char*)malloc(strlen(result) + strlen(imgDirName));
-    strcpy(imgDir, result);
+    char *imgDir = (char*)malloc(strlen(dirName) + strlen(imgDirName));
+    strcpy(imgDir, dirName);
     strcat(imgDir, imgDirName);
     mkdir(imgDir, 0000755);
 
     struct siteDir *siteDirStruct;
     siteDirStruct = (struct siteDir *) malloc(sizeof(struct siteDir));
-    siteDirStruct -> dirName = result;
+    siteDirStruct -> dirName = dirName;
     siteDirStruct -> dirImgName = imgDir;
 
     return siteDirStruct;    
