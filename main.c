@@ -19,13 +19,14 @@ int main(int argc, char *argv[]) {
 }
 
 void getSite() {
-    dirName = createSiteDirectories(dirName);
 
-    const char *index = "/index.html";
-    char pathToHTML[strlen(dirName) + strlen(index)];
+    //Create own directory for current site
+    siteDirData = createSiteDirectories();
+
+    char pathToHTML[strlen(siteDirData -> dirName) + strlen(indexPage)];
     pathToHTML[0] = 0;
-    strcat(pathToHTML, dirName);
-    strcat(pathToHTML, index);
+    strcat(pathToHTML, siteDirData -> dirName);
+    strcat(pathToHTML, indexPage);
 
     getSource(site, pathToHTML);
 
@@ -84,8 +85,8 @@ void getImage(xmlChar *_src) {
     }
 
     /* Get image path */
-    char imgPath[strlen(dirName) + strlen(imageName) + 1];
-    strcat(imgPath, dirName);
+    char imgPath[strlen(siteDirData -> dirImgName) + strlen(imageName) + 1];
+    strcat(imgPath, siteDirData -> dirImgName);
     strcat(imgPath, "/");
     strcat(imgPath, imageName);
     
@@ -114,16 +115,28 @@ void getSource(char* address, char *filename) {
     printf("\nDownload: %s\n\n", address);
 }
 
-char *createSiteDirectories(char *result) {
+
+
+struct siteDir *createSiteDirectories(void) {
     char *url = malloc(strlen(site));
     strcpy(url, site);
 
-    result = strtok(url, "://");
+    char *result = strtok(url, "://");
     result = strtok(NULL, "://");
-
     mkdir(result, 0000755);
 
-    return result;    
+    char *imgDirName = "/images";
+    char *imgDir = (char*)malloc(strlen(result) + strlen(imgDirName));
+    strcpy(imgDir, result);
+    strcat(imgDir, imgDirName);
+    mkdir(imgDir, 0000755);
+
+    struct siteDir *siteDirStruct;
+    siteDirStruct = (struct siteDir *) malloc(sizeof(struct siteDir));
+    siteDirStruct -> dirName = result;
+    siteDirStruct -> dirImgName = imgDir;
+
+    return siteDirStruct;    
 }
 
 
