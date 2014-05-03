@@ -46,6 +46,12 @@ void parseDocument(xmlNode *node) {
     }
     
     while(node->next) {
+
+        //Ignore inine scripts
+        if(strncmp((const char*)node->name, "script", 5) == 0 ) {
+            if( xmlGetProp(node, src) == 0 ) node = node->next;
+        } 
+
         if( node->children ) {
             parseDocument(node->children);
         }
