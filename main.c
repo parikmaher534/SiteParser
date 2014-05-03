@@ -66,7 +66,7 @@ void getImage(xmlChar *_src) {
     path[0] = 0;
 
     /* If image from another domain or has a absolute path */
-    if( hasProtocol(src) ) {
+    if( _hasProtocol(src) ) {
         strcat(path, src);
     } else {
         strcat(path, site);

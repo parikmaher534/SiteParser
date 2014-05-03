@@ -1,7 +1,7 @@
 /** 
  * Is url has http or https in the begin 
  */
-int hasProtocol(char *path) {
+int _hasProtocol(char *path) {
     char *isHttp = strstr(path, "http://");
     char *isHttps = strstr(path, "https://");
     
