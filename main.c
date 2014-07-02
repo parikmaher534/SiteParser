@@ -20,7 +20,6 @@ int main(int argc, char *argv[]) {
 
 void getSite() {
 
-    char* _site = normalizeUrl(site);
    
     //Create own directory for current site
     siteDirData = createSiteDirectories();
@@ -70,8 +69,9 @@ void parseDocument(xmlNode *node, int index) {
 
 void getImage(xmlChar *_src) {
     char *src = (char *)_src;
-    
-    int imageSourceLn = strlen(site) + strlen("/") + strlen(src);
+    char* _site = normalizeUrl(site);
+  
+    int imageSourceLn = strlen(_site) + strlen("/") + strlen(src);
     char path[imageSourceLn];
     path[0] = 0;
 
@@ -79,9 +79,13 @@ void getImage(xmlChar *_src) {
     if( _hasProtocol(src) ) {
         strcat(path, src);
     } else {
-        strcat(path, site);
-        strcat(path, "/");
-        strcat(path, src);
+        strcat(path, _site);
+
+        if( strncmp(&src[0], "/", 1) == 0 ) {
+            strcat(path, &src[1]);
+        } else {
+            strcat(path, src);
+        }
     }
 
     /* Get image name from src */
