@@ -11,20 +11,20 @@
 
 /* Global varibles */
 struct siteDir *siteDirData; 
-char *site = NULL;
-const char *indexPage = "/index.html";
+char* site = NULL;
+const char* indexPage = "/index.html";
 
 /* Define structures */
 struct siteDir {
-    char *dirName;
-    char *dirImgName;
+    char* dirName;
+    char* dirImgName;
 };
 
 /* Define functions */
 struct siteDir *createSiteDirectories();
 void parseError(void *ctx);
 void getSite(void);
-void getSource(char* address, char *filename);
-void parseDocument(xmlNode *node);
+void getSource(char* address, char* filename);
+void parseDocument(xmlNode *node, int index);
 void getImage(xmlChar *src);
 

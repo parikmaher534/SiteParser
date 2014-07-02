@@ -20,6 +20,8 @@ int main(int argc, char *argv[]) {
 
 void getSite() {
 
+    char* _site = normalizeUrl(site);
+   
     //Create own directory for current site
     siteDirData = createSiteDirectories();
 
@@ -34,39 +36,41 @@ void getSite() {
     xmlNode *node = xmlDocGetRootElement(doc);
     xmlNode *element = xmlFirstElementChild(node);
 
-    parseDocument(element);
+    parseDocument(element, 0);
 }
 
-void parseDocument(xmlNode *node) {
+void parseDocument(xmlNode *node, int index) {
     const char *img = "img";
     xmlChar src[] = "src";
 
-    if( strncmp((const char*)node->name, img, 2) == 0 ) {
+    if( strncmp((char *)node->name, img, 2) == 0 ) {
          getImage(xmlGetProp(node, src));
     }
     
     while(node->next) {
 
-        //Ignore inine scripts
-        if(strncmp((const char*)node->name, "script", 5) == 0 ) {
+        //Ignore inline scripts
+        if(strncmp((char *)node->name, "script", 5) == 0 ) {
             if( xmlGetProp(node, src) == 0 ) node = node->next;
         } 
 
         if( node->children ) {
-            parseDocument(node->children);
+            parseDocument(node->children, ++index);
         }
 
         node = node->next;
      
-        if( strncmp((const char*)node->name, img, 2) == 0 ) {
+        if( strncmp((char *)node->name, img, 2) == 0 ) {
             getImage(xmlGetProp(node, src));
         }
     }
+
 }
 
 
 void getImage(xmlChar *_src) {
     char *src = (char *)_src;
+    
     int imageSourceLn = strlen(site) + strlen("/") + strlen(src);
     char path[imageSourceLn];
     path[0] = 0;
@@ -81,21 +85,22 @@ void getImage(xmlChar *_src) {
     }
 
     /* Get image name from src */
-    char *srcToc;
-    char *imageName;
+    char *srcToc = NULL;
+    char *imageName = NULL;
+ 
     srcToc = strtok(src, "/");
 
     while( srcToc != NULL ) {
         imageName = srcToc;
         srcToc = strtok(NULL, "/");
     }
-
+    
     /* Get image path */
-    char imgPath[strlen(siteDirData -> dirImgName) + strlen(imageName) + 1];
+    char *imgPath = malloc(strlen(siteDirData -> dirImgName) + strlen(imageName) + 1);
     strcat(imgPath, siteDirData -> dirImgName);
     strcat(imgPath, "/");
     strcat(imgPath, imageName);
-    
+
     getSource(path, imgPath);
 }
 
@@ -111,7 +116,7 @@ void getSource(char* address, char *filename) {
     strcat(command, filename);
     strcat(command, " ");
     strcat(command, address);
- 
+
     if( !(pipe = popen(command, "r")) ) {
         exit(1);
     } 
@@ -120,7 +125,6 @@ void getSource(char* address, char *filename) {
     
     printf("\nDownload: %s\n\n", address);
 }
-
 
 
 struct siteDir *createSiteDirectories(void) {
