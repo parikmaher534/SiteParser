@@ -1,5 +1,6 @@
 CC=gcc
-CFLAGS=-c -Wall
+CFLAGS=-c -Wall 
+#-Wno-pointer-sign
 LDFLAGS= -lcrypto -I/usr/include/libxml2 -lxml2
 SOURCES=main.c
 HEADERS=main.h
