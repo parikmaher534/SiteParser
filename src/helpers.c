@@ -47,13 +47,12 @@ char* normalizeUrl(char* address) {
             strcat(chunk, "/");
 
             for( int i = 0; i < arrSize; i++ ) {
-                if( strstr(strPart, pageExtensions[i]) != NULL ) goto parseEnd;
+                if( strstr(strPart, pageExtensions[i]) != NULL ) return chunk;
             }
 
             strcat(chunk, strPart);
         }
     }
-    parseEnd:
 
     return chunk;
 }
