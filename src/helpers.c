@@ -1,3 +1,18 @@
+/**
+ *	Cut protocol from url
+ */
+char* _cutProtocol(char* _url) {
+	char url[strlen(_url)];
+	strcpy(url, _url);
+
+	char* preCutedUrl = strstr(url, "://");
+	char* cutedUrl = (char*) malloc(strlen(preCutedUrl) - 3);
+	strcat(cutedUrl, &preCutedUrl[3]);
+
+	return cutedUrl;
+}
+
+
 /** 
  * Is url has http or https in the begin 
  */
@@ -20,13 +35,15 @@ char* _hasProtocol(char *path) {
 }
 
 
-/* Cut files with base extensions from the url */
+/**
+ *  Cut files with base extensions from the url 
+ */
 char* pageExtensions[2] = { 
     ".html", 
     ".php" 
 };
 
-char* normalizeUrl(char* address) {
+char* _normalizeUrl(char* address) {
     char _address[strlen(address)];
     strcpy(_address, address);
     
