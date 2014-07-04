@@ -1,11 +1,25 @@
 #include "main.h"
 #include "src/helpers.c"
 
+void splitAddressBySpash(char* address){
+	printf("Input address: %s\n", address);
+
+	char* urlWithoutProtocol = _cutProtocol(address); 
+	
+	printf("Normal Url: %s\n", urlWithoutProtocol);
+   
+
+	//char* normalUrl = _normalizeUrl(urlWithoutProtocol);
+	
+	//printf("Normal Url: %s\n", normalUrl);
+	
+	free(urlWithoutProtocol);
+};
 
 int main(int argc, char *argv[]) {
 
     //Redefine parse error handler
-    xmlSetGenericErrorFunc(NULL, (void *)parseError);
+    xmlSetGenericErrorFunc(0, (void *)parseError);
 
     /* First argument must be the site URL */
     if( argv[1] ) {
@@ -20,7 +34,6 @@ int main(int argc, char *argv[]) {
 
 void getSite() {
 
-   
     //Create own directory for current site
     siteDirData = createSiteDirectories();
 
@@ -69,7 +82,7 @@ void parseDocument(xmlNode *node, int index) {
 
 void getImage(xmlChar *_src) {
     char *src = (char *)_src;
-    char* _site = normalizeUrl(site);
+    char* _site = _normalizeUrl(site);
   
     int imageSourceLn = strlen(_site) + strlen("/") + strlen(src);
     char path[imageSourceLn];
@@ -130,17 +143,18 @@ void getSource(char* address, char *filename) {
     printf("\nDownload: %s\n\n", address);
 }
 
-
 struct siteDir *createSiteDirectories(void) {
-    char *url = malloc(strlen(site));
+    char* url = malloc(strlen(site));
     strcpy(url, site);
 
-    char *dirName = strtok(url, "://");
-    dirName = strtok(NULL, "://");
+	splitAddressBySpash(site);
+
+    char* dirName = strtok(url, "://");
+    dirName = strtok(0, "/");
     mkdir(dirName, 0000755);
 
-    char *imgDirName = "/images";
-    char *imgDir = (char*)malloc(strlen(dirName) + strlen(imgDirName));
+    char* imgDirName = "/images";
+    char* imgDir = (char*)malloc(strlen(dirName) + strlen(imgDirName));
     strcpy(imgDir, dirName);
     strcat(imgDir, imgDirName);
     mkdir(imgDir, 0000755);
