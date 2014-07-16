@@ -87,9 +87,8 @@ char** splitUrlBySlash(char* address){
 	chunk = strtok(urlWithoutProtocol, "/");
 
 	int chunkIndex = 0;
-	char** out = malloc(sizeof(char));
+	char** out = malloc(sizeof(char) * strlen(address));
 	while( chunk != NULL ) {
-		realloc(out, strlen(chunk) * sizeof(char));
 		out[chunkIndex] = chunk;
 		chunk = strtok(NULL, "/");
 		chunkIndex++;
