@@ -1,20 +1,6 @@
 #include "main.h"
 #include "src/helpers.c"
 
-void splitAddressBySpash(char* address){
-	printf("Input address: %s\n", address);
-
-	char* urlWithoutProtocol = _cutProtocol(address); 
-	
-	printf("Normal Url: %s\n", urlWithoutProtocol);
-   
-
-	//char* normalUrl = _normalizeUrl(urlWithoutProtocol);
-	
-	//printf("Normal Url: %s\n", normalUrl);
-	
-	free(urlWithoutProtocol);
-};
 
 int main(int argc, char *argv[]) {
 
@@ -144,10 +130,13 @@ void getSource(char* address, char *filename) {
 }
 
 struct siteDir *createSiteDirectories(void) {
-    char* url = malloc(strlen(site));
+	char* url = malloc(strlen(site));
     strcpy(url, site);
+	
+	//Get site url splited by '/'. Loop them and create sub directories
+	char** splitedUrl = splitUrlBySlash(site);
 
-	splitAddressBySpash(site);
+	//TODO: Create sub directories;
 
     char* dirName = strtok(url, "://");
     dirName = strtok(0, "/");

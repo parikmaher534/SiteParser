@@ -48,6 +48,7 @@ char* _normalizeUrl(char* address) {
     strcpy(_address, address);
     
     char* protocol = _hasProtocol(_address);  
+
     char* chunk = (char*) malloc(strlen(_address)); 
     if( protocol != 0 ) {
         strcat(chunk, protocol);
@@ -73,4 +74,28 @@ char* _normalizeUrl(char* address) {
 
     return chunk;
 }
+
+
+/**
+ * Split url by '/' and return array of url chunks
+ */
+char** splitUrlBySlash(char* address){
+	char* normalUrl = _normalizeUrl(address);
+	
+	char* urlWithoutProtocol = _cutProtocol(normalUrl); 
+
+	char* chunk;
+	chunk = strtok(urlWithoutProtocol, "/");
+
+	int chunkIndex = 0;
+	char** out = malloc(sizeof(char));
+	while( chunk != NULL ) {
+		realloc(out, strlen(chunk) * sizeof(char));
+		out[chunkIndex] = chunk;
+		chunk = strtok(NULL, "/");
+		chunkIndex++;
+	}
+
+	return out;
+};
 
