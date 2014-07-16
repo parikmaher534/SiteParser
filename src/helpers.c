@@ -81,7 +81,6 @@ char* _normalizeUrl(char* address) {
  */
 char** splitUrlBySlash(char* address){
 	char* normalUrl = _normalizeUrl(address);
-	
 	char* urlWithoutProtocol = _cutProtocol(normalUrl); 
 
 	char* chunk;
