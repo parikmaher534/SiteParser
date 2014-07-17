@@ -40,20 +40,27 @@ void getSite() {
 void parseDocument(xmlNode *node, int index) {
     const char *img = "img";
     xmlChar src[] = "src";
-
+	
     if( strncmp((char *)node->name, img, 2) == 0 ) {
          getImage(xmlGetProp(node, src));
     }
-    
-    while(node->next) {
-
-        //Ignore inline scripts
-        if(strncmp((char *)node->name, "script", 5) == 0 ) {
-            if( xmlGetProp(node, src) == 0 ) node = node->next;
-        } 
-
-        if( node->children ) {
-            parseDocument(node->children, ++index);
+   
+	//Ignore inline scripts
+	if(strncmp((char *)node->name, "script", 5) == 0 ) {
+		if( xmlGetProp(node, src) == 0 ) {
+			node = node->next;
+		}
+	}
+	
+	while(node->next) {
+		if( node->children != NULL ) {
+		
+			//Don't parse comments	
+			if( 
+				node->children->type != 4 
+			) {
+				parseDocument(node->children, ++index);
+			}
         }
 
         node = node->next;
@@ -62,7 +69,6 @@ void parseDocument(xmlNode *node, int index) {
             getImage(xmlGetProp(node, src));
         }
     }
-
 }
 
 
