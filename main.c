@@ -1,5 +1,5 @@
 #include "main.h"
-#include "src/helpers.c"
+#include "lib/helpers.c"
 
 
 int main(int argc, char *argv[]) {
