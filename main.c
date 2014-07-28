@@ -1,8 +1,11 @@
 #include "main.h"
 #include "lib/helpers.c"
+#include "lib/parser.c"
 
 
 int main(int argc, char *argv[]) {
+
+	parseHTML("test/index.html", "a");
 
     //Redefine parse error handler
     xmlSetGenericErrorFunc(0, (void *)parseError);
