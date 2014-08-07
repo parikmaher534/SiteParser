@@ -5,7 +5,9 @@
 
 int main(int argc, char *argv[]) {
 
-	parseHTML("test/index.html", "a");
+	char** tagsArr = parseHTML("test/index.html", "a");
+
+	printf("=====%s====", tagsArr[1]);
 
     //Redefine parse error handler
     xmlSetGenericErrorFunc(0, (void *)parseError);
