@@ -5,9 +5,10 @@
 
 int main(int argc, char *argv[]) {
 
-	char** tagsArr = parseHTML("test/index.html", "a");
+	/* Test parser */
+	char** tagsArr = HTMLparser("test/index.html", "a");
+	printf("\nTag attr %s: \n", HTMLgetAttr(tagsArr[0], "href"));
 
-	printf("=====%s====", tagsArr[1]);
 
     //Redefine parse error handler
     xmlSetGenericErrorFunc(0, (void *)parseError);

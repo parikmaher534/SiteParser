@@ -9,6 +9,9 @@
 #include <libxml/HTMLtree.h>
 
 
+extern int errno ;
+
+
 /* Global varibles */
 struct siteDir *siteDirData; 
 char* site = NULL;
