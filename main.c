@@ -6,8 +6,8 @@
 int main(int argc, char *argv[]) {
 
 	/* Test parser */
-	char** tagsArr = HTMLparser("test/index.html", "a");
-	printf("\nTag attr %s: \n", HTMLgetAttr(tagsArr[0], "href"));
+	char** tagsArr = HTMLparser("test/index.html", "meta");
+	printf("\nTag attr %s: \n", HTMLgetAttr(tagsArr[0], "charset"));
 
 
     //Redefine parse error handler
