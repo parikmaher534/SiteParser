@@ -86,10 +86,47 @@ char** HTMLparser(char* path, char* tag) {
 	return tags;
 }
 
-
+/* TODO: Check on correct params type */
 char* HTMLgetAttr(char* tag, char* attrName) {
-	//TODO: Find pointer to attr first char and loop attr value
-	return "Test";
+	int strSize = strlen(tag);
+	int counter = 0;
+	int search = 0;
+	int isAttrLn = 0;
+
+	char symbol;
+	int index = 0;
+	int attrValIndex = 0;
+	
+	char* attr = (char*)malloc(strlen(attrName));
+	strcat(attr, attrName);
+	char* attrVal = (char*)malloc(1);
+
+	while(counter < strSize) {
+		
+		//If we end current attr value	
+		if( search == 1 && strrchr("\"", symbol) != NULL ) break;	
+		
+		if( search == 1 ) {
+			attrVal[attrValIndex] = symbol;
+			attrValIndex++;
+		}
+
+		if( symbol == attr[index] ) {
+			index++;
+		} else {
+			index = 0;
+		}
+		
+		if( strlen(attr) == index ) isAttrLn = 1;
+		
+		//If we found correct attr and =" is gone - start select attr value	
+		if( isAttrLn == 1 && strrchr("\"", symbol) != NULL ) search = 1;	
+		
+		symbol = tag[counter];
+		counter++;
+	}
+
+	return attrValIndex == 0 ? NULL : attrVal;
 }
 
 
