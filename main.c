@@ -5,13 +5,6 @@
 
 int main(int argc, char *argv[]) {
 
-	/* Test parser */
-	char** tagsArr = HTMLparser("test/index.html", "meta");
-	printf("\nTag attr %s: \n", HTMLgetAttr(tagsArr[0], "charset"));
-
-
-    //Redefine parse error handler
-    xmlSetGenericErrorFunc(0, (void *)parseError);
 
     /* First argument must be the site URL */
     if( argv[1] ) {
@@ -36,11 +29,18 @@ void getSite() {
 
     getSource(site, pathToHTML);
 
-    xmlDoc *doc = htmlReadFile(pathToHTML, "UTF-8", 0);
+	char** tagsArr = HTMLparser(pathToHTML, "img");
+	int tagsAmount = sizeof(tagsArr) / sizeof(char*);
+
+	for( int i = 0; i <= tagsAmount + 1; i++ ) {
+		printf("IMG: %s\n", tagsArr[i]);
+	}
+
+    /*xmlDoc *doc = htmlReadFile(pathToHTML, "UTF-8", 0);
     xmlNode *node = xmlDocGetRootElement(doc);
     xmlNode *element = xmlFirstElementChild(node);
 
-    parseDocument(element, 0);
+    parseDocument(element, 0);*/
 }
 
 void parseDocument(xmlNode *node, int index) {
@@ -167,7 +167,3 @@ struct siteDir *createSiteDirectories(void) {
 
     return siteDirStruct;    
 }
-
-
-//TODO: write to error log
-void parseError(void *ctx) { };
