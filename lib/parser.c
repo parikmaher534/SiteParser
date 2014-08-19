@@ -13,6 +13,7 @@ char* HTMLgetAttr(char* tag, char* attrName);
 char** HTMLparser(char* path, char* tag) {
 	FILE* page = fopen(path, "r");
 
+
 	//Get file size	
 	fseek(page, 0L, SEEK_END);
 	int fileSize = ftell(page);
@@ -37,35 +38,34 @@ char** HTMLparser(char* path, char* tag) {
 				__HTMLparserLogENOMEM();
 				
 				tagStr[index + 1] = symbol;
-
+	
 				index++;
 			} else {
+				tagStr = (char*)realloc(tagStr, 1);
 				search = 0;
 				index = 0;
 			}
 			
-			if( strlen(tag) == index ) {
-				search = 2;
-				index++;
-			}
+			if( strlen(tag) == index ) search = 2;
 		} 
 
 		//If it was searching tag - get whole tag with all attributes
 		else if( search == 2 ) {
 			tagStr = (char*)realloc(tagStr, index + 2);
 			__HTMLparserLogENOMEM();
-			
+		
 			tagStr[index] = symbol;
 	
 			if( strrchr(">", symbol) == 0 ) {
 				index++;
 			} else {
-				char* tag = (char*)malloc(index + 2);
+				char* tagEl = (char*)malloc(index + 1);
 				__HTMLparserLogENOMEM();
-				
-				strcpy(tag, tagStr);
+			
+				strcpy(tagEl, tagStr);
 
-				tags[tagsIndex] = tag;
+				tagStr = (char*)realloc(tagStr, 0);
+				tags[tagsIndex] = tagEl;
 				search = 0;
 				index = 0;
 				tagsIndex++;
@@ -86,7 +86,6 @@ char** HTMLparser(char* path, char* tag) {
 	return tags;
 }
 
-/* TODO: Check on correct params type */
 char* HTMLgetAttr(char* tag, char* attrName) {
 	int strSize = strlen(tag);
 	int counter = 0;
