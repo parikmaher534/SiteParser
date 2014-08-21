@@ -51,18 +51,20 @@ char** HTMLparser(char* path, char* tag) {
 
 		//If it was searching tag - get whole tag with all attributes
 		else if( search == 2 ) {
-			tagStr = (char*)realloc(tagStr, index + 2);
-			__HTMLparserLogENOMEM();
-		
-			tagStr[index] = symbol;
 	
 			if( strrchr(">", symbol) == 0 ) {
-				index++;
-			} else {
-				char* tagEl = (char*)malloc(index + 1);
+				tagStr = (char*)realloc(tagStr, index + 2);
 				__HTMLparserLogENOMEM();
 			
+				tagStr[index + 1] = symbol;
+
+				index++;
+			} else {
+				char* tagEl = (char*)malloc(index + 2);
+				__HTMLparserLogENOMEM();
+
 				strcpy(tagEl, tagStr);
+				strcat(tagEl, ">");
 
 				tagStr = (char*)realloc(tagStr, 0);
 				tags[tagsIndex] = tagEl;
@@ -74,7 +76,7 @@ char** HTMLparser(char* path, char* tag) {
 
 		//If we find '<' enable tag search mode	
 		if( strrchr("<", symbol) != NULL ) {
-			tagStr[index] = symbol;
+			tagStr[0] = symbol;
 			search = 1;
 		}
 		
