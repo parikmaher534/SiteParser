@@ -28,6 +28,6 @@ struct siteDir *createSiteDirectories();
 void parseError(void *ctx);
 void getSite(void);
 void getSource(char* address, char* filename);
-void parseDocument(xmlNode *node, int index);
-void getImage(xmlChar *src);
+void getImage(char* src);
+char* getFileNameFromSrc(char* _src);
 

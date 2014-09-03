@@ -51,20 +51,17 @@ char** HTMLparser(char* path, char* tag) {
 
 		//If it was searching tag - get whole tag with all attributes
 		else if( search == 2 ) {
-	
-			if( strrchr(">", symbol) == 0 ) {
-				tagStr = (char*)realloc(tagStr, index + 2);
-				__HTMLparserLogENOMEM();
+			tagStr = (char*)realloc(tagStr, index + 2);
+			__HTMLparserLogENOMEM();
+			tagStr[index + 1] = symbol;
 			
-				tagStr[index + 1] = symbol;
-
+			if( strrchr(">", symbol) == 0 ) {
 				index++;
 			} else {
 				char* tagEl = (char*)malloc(index + 2);
 				__HTMLparserLogENOMEM();
 
 				strcpy(tagEl, tagStr);
-				strcat(tagEl, ">");
 
 				tagStr = (char*)realloc(tagStr, 0);
 				tags[tagsIndex] = tagEl;
@@ -88,8 +85,8 @@ char** HTMLparser(char* path, char* tag) {
 	return tags;
 }
 
-char* HTMLgetAttr(char* tag, char* attrName) {
-	int strSize = strlen(tag);
+char* HTMLgetAttr(char* _tag, char* attrName) {
+	int strSize = strlen(_tag);
 	int counter = 0;
 	int search = 0;
 	int isAttrLn = 0;
@@ -97,33 +94,44 @@ char* HTMLgetAttr(char* tag, char* attrName) {
 	char symbol;
 	int index = 0;
 	int attrValIndex = 0;
-	
-	char* attr = (char*)malloc(strlen(attrName));
-	strcat(attr, attrName);
 	char* attrVal = (char*)malloc(1);
+
+	char* tag = (char*)malloc(strSize);
+	strcat(tag, _tag);
 
 	while(counter < strSize) {
 		
-		//If we end current attr value	
-		if( search == 1 && strrchr("\"", symbol) != NULL ) break;	
-		
-		if( search == 1 ) {
-			attrVal[attrValIndex] = symbol;
-			attrValIndex++;
-		}
-
-		if( symbol == attr[index] ) {
-			index++;
-		} else {
-			index = 0;
-		}
-		
-		if( strlen(attr) == index ) isAttrLn = 1;
-		
-		//If we found correct attr and =" is gone - start select attr value	
-		if( isAttrLn == 1 && strrchr("\"", symbol) != NULL ) search = 1;	
-		
 		symbol = tag[counter];
+		
+		//If we end current attr value	
+		if( search == 1 ) {
+			if( strrchr("\"", symbol) != NULL ) {
+				break;
+			} else {
+				attrVal = (char*)realloc(attrVal, attrValIndex);
+				strcat(attrVal, &symbol);
+				attrValIndex++;
+			}
+		}
+	
+		if( search == 0 ) {	
+			if( symbol == attrName[index] ) {
+				index++;
+			} else {
+				index = 0;
+			}
+			
+			if( strlen(attrName) == index ) {
+				isAttrLn = 1;
+			}
+			
+			//If we found correct attr and =" is gone - start select attr value	
+			if( isAttrLn == 1 && strrchr("\"", symbol) != NULL ) {
+				search = 1;
+				isAttrLn = 0;	
+			}
+		}
+		
 		counter++;
 	}
 

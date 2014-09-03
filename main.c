@@ -5,7 +5,6 @@
 
 int main(int argc, char *argv[]) {
 
-
     /* First argument must be the site URL */
     if( argv[1] ) {
         site = argv[1];
@@ -30,91 +29,32 @@ void getSite() {
     getSource(site, pathToHTML);
 
 	char** tagsArr = HTMLparser(pathToHTML, "img");
-	int tagsAmount = sizeof(tagsArr) / sizeof(char*);
+	int tagsAmount = sizeof(tagsArr) / sizeof(char*) + 1;
 
-	for( int i = 0; i <= tagsAmount + 1; i++ ) {
-		printf("IMG: %s\n", tagsArr[i]);
+	//Loop all images
+	for( int i = 0; i <= tagsAmount; i++ ) {
+		char* attr = HTMLgetAttr(tagsArr[i], "src"); 
+        getImage(attr);
 	}
-
-    /*xmlDoc *doc = htmlReadFile(pathToHTML, "UTF-8", 0);
-    xmlNode *node = xmlDocGetRootElement(doc);
-    xmlNode *element = xmlFirstElementChild(node);
-
-    parseDocument(element, 0);*/
 }
 
-void parseDocument(xmlNode *node, int index) {
-    const char *img = "img";
-    xmlChar src[] = "src";
-	
-    if( strncmp((char *)node->name, img, 2) == 0 ) {
-         getImage(xmlGetProp(node, src));
-    }
-   
-	//Ignore inline scripts
-	if(strncmp((char *)node->name, "script", 5) == 0 ) {
-		if( xmlGetProp(node, src) == 0 ) {
-			node = node->next;
-		}
-	}
-	
-	while(node->next) {
-		if( node->children != NULL ) {
-		
-			//Don't parse comments	
-			if( 
-				node->children->type != 4 
-			) {
-				parseDocument(node->children, ++index);
-			}
-        }
-
-        node = node->next;
-     
-        if( strncmp((char *)node->name, img, 2) == 0 ) {
-            getImage(xmlGetProp(node, src));
-        }
-    }
-}
-
-
-void getImage(xmlChar *_src) {
-    char *src = (char *)_src;
-    char* _site = _normalizeUrl(site);
-  
-    int imageSourceLn = strlen(_site) + strlen("/") + strlen(src);
+void getImage(char* src) {
+    int imageSourceLn = strlen(site) + strlen(src);
     char path[imageSourceLn];
-    path[0] = 0;
-
-    /* If image from another domain or has a absolute path */
-    if( _hasProtocol(src) ) {
-        strcat(path, src);
-    } else {
-        strcat(path, _site);
-
-        if( strncmp(&src[0], "/", 1) == 0 ) {
-            strcat(path, &src[1]);
-        } else {
-            strcat(path, src);
-        }
-    }
-
-    /* Get image name from src */
-    char *srcToc = NULL;
-    char *imageName = NULL;
- 
-    srcToc = strtok(src, "/");
-
-    while( srcToc != NULL ) {
-        imageName = srcToc;
-        srcToc = strtok(NULL, "/");
-    }
     
-    /* Get image path */
-    char *imgPath = malloc(strlen(siteDirData -> dirImgName) + strlen(imageName) + 1);
+	path[0] = 0;
+	strcat(path, site);
+	strcat(path, src);
+
+	char* filename = getFileNameFromSrc(src);
+	
+	/* Get image path */
+    char *imgPath = malloc(strlen(siteDirData -> dirImgName) + strlen(filename) + 1);
     strcat(imgPath, siteDirData -> dirImgName);
     strcat(imgPath, "/");
-    strcat(imgPath, imageName);
+    strcat(imgPath, filename);
+
+	//TODO: Check on '/' at the str begin	
 
     getSource(path, imgPath);
 }
@@ -167,3 +107,23 @@ struct siteDir *createSiteDirectories(void) {
 
     return siteDirStruct;    
 }
+
+
+char* getFileNameFromSrc(char* _src) {
+	char src[strlen(_src)];
+	src[0] = 0;
+	
+	strcat(src, _src);
+
+	char* strToc = strtok(src, "/");
+	char* fileName = (char*)malloc(1);
+
+	while(strToc != NULL) {
+		fileName = (char*)realloc(fileName, strlen(strToc) + 1);
+		strcpy(fileName, strToc);
+		strToc = strtok(NULL, "/");
+	}
+
+	return fileName;
+}
+
