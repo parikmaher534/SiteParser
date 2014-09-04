@@ -44,6 +44,7 @@ void getImage(char* src) {
     
 	path[0] = 0;
 	strcat(path, site);
+	if( strncmp(&src[0], "/", 1) != 0 ) strcat(path, "/");
 	strcat(path, src);
 
 	char* filename = getFileNameFromSrc(src);
@@ -53,8 +54,6 @@ void getImage(char* src) {
     strcat(imgPath, siteDirData -> dirImgName);
     strcat(imgPath, "/");
     strcat(imgPath, filename);
-
-	//TODO: Check on '/' at the str begin	
 
     getSource(path, imgPath);
 }
