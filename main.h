@@ -3,11 +3,6 @@
 #include <string.h>
 #include <sys/stat.h>
 
-#include <libxml/parser.h>
-#include <libxml/tree.h>
-#include <libxml/HTMLparser.h>
-#include <libxml/HTMLtree.h>
-
 
 extern int errno ;
 
