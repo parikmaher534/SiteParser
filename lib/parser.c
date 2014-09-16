@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <errno.h>
 
@@ -10,7 +11,7 @@ void __HTMLparserLogENOMEM();
 char* HTMLgetAttr(char* tag, char* attrName);
 
 
-char** HTMLparser(char* path, char* tag) {
+char** HTMLgetTags(char* path, char* tag) {
 	FILE* page = fopen(path, "r");
 
 
