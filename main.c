@@ -28,7 +28,7 @@ void getSite() {
 
     getSource(site, pathToHTML);
 
-	char** tagsArr = HTMLparser(pathToHTML, "img");
+	char** tagsArr = HTMLgetTags(pathToHTML, "img");
 	int tagsAmount = sizeof(tagsArr) / sizeof(char*) + 1;
 
 	//Loop all images
