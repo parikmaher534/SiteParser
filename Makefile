@@ -1,12 +1,15 @@
-CC=gcc
-CFLAGS=-c -Wall 
+#Application variables
+CC = gcc
+CFLAGS = -c -Wall 
 #-Wno-pointer-sign
-LDFLAGS= -lcrypto -I/usr/include/libxml2 -lxml2
-SOURCES=main.c
-HEADERS=main.h
-OBJECTS=$(SOURCES:.c=.o)
-EXECUTABLE=main
+LDFLAGS = -lcrypto
+SOURCES = main.c
+HEADERS = main.h
+OBJECTS = $(SOURCES:.c=.o)
+EXECUTABLE = main
 
+
+#Commands
 all: $(SOURCES) $(EXECUTABLE)
 
 $(EXECUTABLE): $(OBJECTS)
@@ -14,5 +17,3 @@ $(EXECUTABLE): $(OBJECTS)
 
 .c.o:
 	$(CC) $(CFLAGS) $< -o $@
-
-
