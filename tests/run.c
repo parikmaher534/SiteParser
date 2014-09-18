@@ -7,13 +7,23 @@ int main() {
 }
 
 
+/* Helper: add to path new directory */
+char* pathConcater(char* right, char* left) {
+	char* path = (char*)malloc(strlen(right) + strlen(left) + 1);
+	strcat(path, right);
+	strcat(path, "/");
+	strcat(path, left);
+	
+	return path;
+}
+
+
 /* Tests loader */
 void loadTests() {
 	char testsPath[] = "parser";
 	DIR* TESTS_DIR = opendir(testsPath);
 
 	if( TESTS_DIR != NULL ) {
-		
 		struct dirent* pDirent;
 		int dirIterator = 0;
 		
@@ -34,11 +44,7 @@ void loadTests() {
 
 /* Test parser on tag detection */
 void TEST_getTags(char* testRoot, char* name) {
-	char testDirName[strlen(testRoot) + strlen(name) + 1];
-	testDirName[0] = 0;
-	strcat(testDirName, testRoot);
-	strcat(testDirName, "/");
-	strcat(testDirName, name);
+	char* testDirName = pathConcater(testRoot, name);
 
 	//Loop all tags
 	DIR* TAG = opendir(testDirName);
@@ -50,12 +56,8 @@ void TEST_getTags(char* testRoot, char* name) {
 		while( (tagDirent = readdir(TAG)) != NULL ) {
 			if( tagsIterator > 1 ) {
 				char* tagName = tagDirent->d_name;
-				char tagPath[strlen(testDirName) + strlen(tagName) + 1];
-				tagPath[0] = 0;
-				strcat(tagPath, testDirName);
-				strcat(tagPath, "/");
-				strcat(tagPath, tagName);
-
+				char* tagPath = pathConcater(testDirName, tagName);
+				
 				//Loop test .in and .out files
 				DIR* SOURCE = opendir(tagPath);
 
@@ -65,12 +67,8 @@ void TEST_getTags(char* testRoot, char* name) {
 
 					while( (sourceDirent = readdir(SOURCE)) != NULL ) {
 						if( filesIterator > 1 ) {
-							char pathToFile[strlen(tagPath) + strlen(sourceDirent->d_name) + 1];
-							pathToFile[0] = 0;
-							strcat(pathToFile, tagPath);
-							strcat(pathToFile, "/");
-							strcat(pathToFile, sourceDirent->d_name);
-							
+							char* pathToFile = pathConcater(tagPath, sourceDirent->d_name);
+
 							printf("Source: %s\n", sourceDirent->d_name);
 							//TODO: this;
 						}
@@ -78,7 +76,10 @@ void TEST_getTags(char* testRoot, char* name) {
 					}
 				}
 			}
+
 			tagsIterator++;
 		}
 	}
+
+	free(testDirName);
 }
