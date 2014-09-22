@@ -97,3 +97,53 @@ char** splitUrlBySlash(char* address){
 	return out;
 };
 
+/**
+ * Create chars array from file
+ */
+char* fileToString(char* path) {
+	FILE* file = fopen(path, "r");
+	int fileSize;
+	char* out;
+
+	if( file != NULL ) {
+		fseek(file, 0, SEEK_END);
+		fileSize = ftell(file);
+		rewind(file);
+
+		out = (char*)malloc(sizeof(char)*fileSize);
+		
+		if( out != NULL ) {
+			size_t result = fread(out, 1, fileSize, file);
+
+			if( result != fileSize ) {
+				perror("File read error");
+				exit(EXIT_FAILURE);
+			}
+		} else {
+			perror("Memory error");
+			exit(EXIT_FAILURE);
+		}		
+	} else {
+		printf("Can't open file: %s\n", path);
+		exit(EXIT_FAILURE);
+	}
+
+	return out;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
