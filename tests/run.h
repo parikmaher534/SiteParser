@@ -1,4 +1,5 @@
 #include "../lib/parser.c"
+#include "../lib/helpers.c"
 #include <stdio.h>
 #include <dirent.h>
 
