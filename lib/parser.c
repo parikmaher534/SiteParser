@@ -4,16 +4,17 @@
 #include <errno.h>
 
 
-/* Detect Out Of Memory problem log and exit program */
-void __HTMLparserLogENOMEM();
 
 /* Get tag attribute */
 char* HTMLgetAttr(char* tag, char* attrName);
 
 
-char** HTMLgetTags(char* path, char* tag) {
+char** HTMLgetTags(char* path, char* _tag) {
 	FILE* page = fopen(path, "r");
 
+	char tag[strlen(_tag)];
+	tag[0] = 0;
+	strcat(tag, _tag);
 
 	//Get file size	
 	fseek(page, 0L, SEEK_END);
@@ -24,11 +25,11 @@ char** HTMLgetTags(char* path, char* tag) {
 	int tagsIndex = 0;
 
 	char* tagStr = (char*)malloc(1);
+	tagStr[0] = 0;
 	int symbol = fgetc(page);
 	int index = 0;
 	int search = 0;
 
-	__HTMLparserLogENOMEM();
 
 	while( symbol != EOF ) {
 
@@ -36,13 +37,12 @@ char** HTMLgetTags(char* path, char* tag) {
 		if( search == 1 ) {
 			if( symbol == tag[index] ) {
 				tagStr = (char*)realloc(tagStr, index + 1);
-				__HTMLparserLogENOMEM();
-				
-				tagStr[index + 1] = symbol;
+				tagStr[index] = symbol;
 	
 				index++;
 			} else {
 				tagStr = (char*)realloc(tagStr, 1);
+				tagStr[0] = 0;
 				search = 0;
 				index = 0;
 			}
@@ -52,19 +52,18 @@ char** HTMLgetTags(char* path, char* tag) {
 
 		//If it was searching tag - get whole tag with all attributes
 		else if( search == 2 ) {
-			tagStr = (char*)realloc(tagStr, index + 2);
-			__HTMLparserLogENOMEM();
-			tagStr[index + 1] = symbol;
-			
+			tagStr = (char*)realloc(tagStr, index + 1);
+			tagStr[index] = symbol;
+
 			if( strrchr(">", symbol) == 0 ) {
 				index++;
 			} else {
-				char* tagEl = (char*)malloc(index + 2);
-				__HTMLparserLogENOMEM();
+				char* tagEl = (char*)malloc(index + 1);
+				strcat(tagEl, "<");
+				strcat(tagEl, tagStr);
 
-				strcpy(tagEl, tagStr);
-
-				tagStr = (char*)realloc(tagStr, 0);
+				tagStr = (char*)realloc(tagStr, 1);
+				tagStr[0] = 0;
 				tags[tagsIndex] = tagEl;
 				search = 0;
 				index = 0;
@@ -74,7 +73,6 @@ char** HTMLgetTags(char* path, char* tag) {
 
 		//If we find '<' enable tag search mode	
 		if( strrchr("<", symbol) != NULL ) {
-			tagStr[0] = symbol;
 			search = 1;
 		}
 		
@@ -138,12 +136,3 @@ char* HTMLgetAttr(char* _tag, char* attrName) {
 
 	return attrValIndex == 0 ? NULL : attrVal;
 }
-
-
-void __HTMLparserLogENOMEM() {
-	if( errno == ENOENT ) {
-		perror("Out of memory.");
-		exit(EXIT_FAILURE); 
-	}
-}
-
