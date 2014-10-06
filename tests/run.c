@@ -10,6 +10,7 @@ int main() {
 /* Helper: add to path new directory */
 char* pathConcater(char* right, char* left) {
 	char* path = (char*)malloc(strlen(right) + strlen(left) + 1);
+	path[0] = 0;
 	strcat(path, right);
 	strcat(path, "/");
 	strcat(path, left);
@@ -30,7 +31,6 @@ void loadTests() {
 		//Loop all tests dirs
 		while( (pDirent = readdir(TESTS_DIR)) != NULL ){
 			if( dirIterator > 1 ) {
-
 				if( strcmp(pDirent->d_name, "getTags") == 0 ) {
 					TEST_getTags(testsPath, pDirent->d_name);
 				} else {
@@ -64,16 +64,51 @@ void TEST_getTags(char* testRoot, char* name) {
 				if( SOURCE != NULL ) {
 					int filesIterator = 0;
 					struct dirent* sourceDirent;
+					char** tags;
+					char* inResult = (char*)malloc(0);
+					char* outResult = (char*)malloc(0);
 
 					while( (sourceDirent = readdir(SOURCE)) != NULL ) {
 						if( filesIterator > 1 ) {
 							char* pathToFile = pathConcater(tagPath, sourceDirent->d_name);
 
-							printf("Source: %s\n", sourceDirent->d_name);
-							//TODO: this;
+							//Get array of tags
+							if( strcmp(sourceDirent->d_name, "source.in") == 0  ) {
+								tags = HTMLgetTags(pathToFile, tagName);
+								
+								int arrLn = sizeof(tags) / sizeof(char*) + 1;
+								int totalLn = 0;
+								
+								for( int i = 0; i < arrLn; i++ ) {
+									totalLn += strlen(tags[i]);
+									inResult = (char*)realloc(inResult, totalLn);
+									strcat(inResult, tags[i]);
+									strcat(inResult, "\n");
+								}
+							} 
+							
+							//Get text .of out file
+							else if( strcmp(sourceDirent->d_name, "source.out") == 0  ) {
+								outResult = fileToString(pathToFile);					
+								free(pathToFile);
+							}
 						}
 						filesIterator++;
 					}
+
+					if( strlen(inResult) > 0 & strlen(outResult) > 0 ){
+						if( strcmp(inResult, outResult) == 0 ) {
+							printf("Test 'getTags' for tag '%s', status: SUCCESS.\n", tagName);
+						} else {
+							printf("Test 'getTags' for tag '%s', status: FAIL!!!\n", tagName);
+						}
+					} else {
+						printf("ERROR: empty source files\n");
+					}	
+
+					free(inResult);
+					free(outResult);
+					closedir(SOURCE);
 				}
 			}
 
