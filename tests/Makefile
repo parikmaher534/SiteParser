@@ -1,14 +1,13 @@
-CC = gcc
-CFLAGS = -c -Wall 
+CC = gcc -g
+CFLAGS = -c -Wall -Werror
 LDFLAGS = -lcrypto
 
 SOURCES = run.c
-HEADERS = 
 
 OBJECTS = $(SOURCES:.c=.o)
 EXECUTABLE = run
 
-all: $(SOURCES) $(EXECUTABLE) clean
+all: $(SOURCES) $(EXECUTABLE)
 
 $(EXECUTABLE): $(OBJECTS)
 	$(CC) $(LDFLAGS) $(OBJECTS) -o $@
