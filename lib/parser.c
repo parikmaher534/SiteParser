@@ -58,12 +58,10 @@ char** HTMLgetTags(char* path, char* _tag) {
 			if( strrchr(">", symbol) == 0 ) {
 				index++;
 			} else {
-				char* tagEl = (char*)malloc(index + 1);
+				char* tagEl = (char*)malloc(index + 2);
 				strcat(tagEl, "<");
 				strcat(tagEl, tagStr);
 
-				tagStr = (char*)realloc(tagStr, 1);
-				tagStr[0] = 0;
 				tags[tagsIndex] = tagEl;
 				search = 0;
 				index = 0;
