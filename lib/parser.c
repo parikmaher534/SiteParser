@@ -4,65 +4,71 @@
 #include <errno.h>
 
 
+struct HTML_parserStruct{
+	char** tags;
+	int length;
+};
 
 /* Get tag attribute */
 char* HTMLgetAttr(char* tag, char* attrName);
 
-
-char** HTMLgetTags(char* path, char* _tag) {
+struct HTML_parserStruct HTMLgetTags(char* path, char* _tag) {
 	FILE* page = fopen(path, "r");
 
 	char tag[strlen(_tag)];
 	tag[0] = 0;
 	strcat(tag, _tag);
 
-	//Get file size	
-	fseek(page, 0L, SEEK_END);
-	int fileSize = ftell(page);
-	fseek(page, 0L, SEEK_SET);
-
-	char** tags = (char**)malloc(fileSize);
+	char** tags = malloc(0);
 	int tagsIndex = 0;
 
-	char* tagStr = (char*)malloc(1);
+	char* tagStr = malloc(1);
 	tagStr[0] = 0;
 	int symbol = fgetc(page);
 	int index = 0;
 	int search = 0;
 
+	printf("==============================");
 
 	while( symbol != EOF ) {
 
 		//If we in search mode detect is it searching tag
 		if( search == 1 ) {
 			if( symbol == tag[index] ) {
-				tagStr = (char*)realloc(tagStr, index + 1);
+				tagStr = realloc(tagStr, index + 1);
 				tagStr[index] = symbol;
 	
 				index++;
 			} else {
-				tagStr = (char*)realloc(tagStr, 1);
-				tagStr[0] = 0;
+				free(tagStr);
 				search = 0;
 				index = 0;
 			}
 			
-			if( strlen(tag) == index ) search = 2;
+			if( strlen(tag) == index ) {
+				search = 2;
+				printf("------------------->\n");
+			}
 		} 
 
 		//If it was searching tag - get whole tag with all attributes
 		else if( search == 2 ) {
-			tagStr = (char*)realloc(tagStr, index + 1);
-			tagStr[index] = symbol;
+			printf("%c", symbol);
 
-			if( strrchr(">", symbol) == 0 ) {
-				index++;
-			} else {
-				char* tagEl = (char*)malloc(index + 2);
+			tagStr = realloc(tagStr, index + 1);
+			tagStr[index] = symbol;
+			index++;
+			
+			if( strrchr(">", symbol) != 0 ) {
+				char* tagEl = malloc(index + 1);
+				tagEl[0] = 0;
+
 				strcat(tagEl, "<");
 				strcat(tagEl, tagStr);
-
 				tags[tagsIndex] = tagEl;
+
+				free(tagStr);
+				
 				search = 0;
 				index = 0;
 				tagsIndex++;
@@ -72,14 +78,18 @@ char** HTMLgetTags(char* path, char* _tag) {
 		//If we find '<' enable tag search mode	
 		if( strrchr("<", symbol) != NULL ) {
 			search = 1;
+			tagStr = malloc(0);
 		}
 		
 		symbol = fgetc(page);
 	}
 
-	free(tagStr);
-
-	return tags;
+	fclose(page);
+    
+	struct HTML_parserStruct object;
+	object.tags = tags;
+	object.length = tagsIndex;
+	return object;
 }
 
 char* HTMLgetAttr(char* _tag, char* attrName) {
