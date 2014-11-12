@@ -1,0 +1,11 @@
+<span class="test-span__one">Text</span>
+
+<span class="test-span__two">
+	<span class="test-span__inside">Text Inside</span>
+</span>
+<ul>
+	<li><span class="inside-li">SPAN IN LI</span></li>
+	<li><span class="inside-li">SPAN IN LI</span></li>
+	<li><span class="inside-li">SPAN IN LI</span></li>
+	<li><span class="inside-li">SPAN IN LI</span></li>
+</ul>
