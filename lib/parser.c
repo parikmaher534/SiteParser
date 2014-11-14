@@ -28,7 +28,6 @@ struct HTML_parserStruct HTMLgetTags(char* path, char* _tag) {
 	int index = 0;
 	int search = 0;
 
-	printf("==============================");
 
 	while( symbol != EOF ) {
 
@@ -47,17 +46,15 @@ struct HTML_parserStruct HTMLgetTags(char* path, char* _tag) {
 			
 			if( strlen(tag) == index ) {
 				search = 2;
-				printf("------------------->\n");
 			}
 		} 
 
 		//If it was searching tag - get whole tag with all attributes
 		else if( search == 2 ) {
-			printf("%c", symbol);
-
-			tagStr = realloc(tagStr, index + 1);
+			int _index = index + 1;
+			tagStr = realloc(tagStr, _index);
+			tagStr[_index] = 0;
 			tagStr[index] = symbol;
-			index++;
 			
 			if( strrchr(">", symbol) != 0 ) {
 				char* tagEl = malloc(index + 1);
@@ -73,6 +70,7 @@ struct HTML_parserStruct HTMLgetTags(char* path, char* _tag) {
 				index = 0;
 				tagsIndex++;
 			}
+			index++;
 		}
 
 		//If we find '<' enable tag search mode	
